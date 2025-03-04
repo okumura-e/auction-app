@@ -1,24 +1,32 @@
-import * as React from "react"
+import { UseFormRegister } from "react-hook-form";
 
-export interface InputProps extends React.InputHTMLAttributes<HTMLInputElement> {}
-
-const Input = React.forwardRef<HTMLInputElement, InputProps>(
-  ({ className, type, ...props }, ref
-) => {
-  return (
-    <input
-      type={type}
-      className={[
-        "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background file:border-0 file:bg-transparent file:text-sm file:font-medium placeholder:text-muted-foreground focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50",
-        className,
-      ].join(" ")}
-      ref={ref}
-      {...props}
-    />
-  )
-}
-)
-Input.displayName = "Input"
-
-export { Input }
-
+interface InputProps {
+    label?: string;
+    name: string;
+    placeholder?: string;
+    type: string;
+    errorMessage?: string;
+    register: UseFormRegister<any>;
+    required?: boolean;
+    value?: string;
+  }
+  
+  const Input = ({ label, type, placeholder, value, required, errorMessage, register, name }: InputProps) => {
+    return (
+      <div className="flex flex-col gap-2">
+        {label && <label className="font-medium">{label}</label>}
+        <input
+          type={type}
+          placeholder={placeholder}
+          value={value}
+          required={required}
+          {...register(name, { value })}
+          className={`border rounded-md p-2 ${errorMessage ? "border-red-500" : "border-gray-300"}`}
+        />
+        {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
+      </div>
+    );
+  };
+  
+  export default Input;
+  
