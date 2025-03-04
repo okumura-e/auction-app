@@ -7,7 +7,8 @@ import * as z from "zod"
 import { useRouter } from "next/navigation"
 import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import Input from "../ui/input"
+import toast from 'react-hot-toast';
 
 const loginSchema = z.object({
   cpf: z
@@ -27,64 +28,58 @@ export default function LoginForm() {
   const { login } = useAuth()
   const router = useRouter()
 
-  const form = useForm<LoginFormValues>({
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors },
+  } = useForm({
     resolver: zodResolver(loginSchema),
-    defaultValues: {
-      cpf: "",
-      password: "",
-    },
-  })
+  });
 
   async function onSubmit(data: LoginFormValues) {
     setIsLoading(true)
-
-    try {
-      await login(data.cpf, data.password)
+    toast.promise(
+      login(data.cpf, data.password),
+      {
+        loading: 'Entrando...',
+        success: <b>Login bem-sucedido!</b>,
+        error: <b>CPF ou senha incorretos.</b>,
+      }
+    ).then(() => {
       router.push("/")
       router.refresh()
-    } catch (error) {
-      // toast({
-      //   title: "Erro ao fazer login",
-      //   description: "CPF ou senha incorretos",
-      //   variant: "destructive",
-      // })
-    } finally {
+    }).finally(() => {
       setIsLoading(false)
-    }
+    })
   }
 
   return (
-    <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <FormField
-          control={form.control}
-          name="cpf"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>CPF</FormLabel>
-              <FormControl {...field} placeholder="000.000.000-00" maxLength={14} />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+      <Input
+        label="CPF"
+        placeholder="000.000.000-00"
+        name="cpf"
+        type="text"
+        register={register}
+        value={watch("cpf")}
+        errorMessage={errors.cpf?.message as string}
+      />
 
-        <FormField
-          control={form.control}
-          name="password"
-          render={({ field }) => (
-            <FormItem className="flex flex-col">
-              <FormLabel>Senha</FormLabel>
-              <FormControl {...field} placeholder="******" type="password" className="p-2 focus:outline-none focus:ring-transparent" />
-              <FormMessage />
-            </FormItem>
-          )}
-        />
+      <Input
+        label="Senha"
+        placeholder="******"
+        name="password"
+        type="password"
+        register={register}
+        value={watch("password")}
+        errorMessage={errors.password?.message as string}
+      />
 
-        <Button type="submit" className="w-full" disabled={isLoading}>
-          {isLoading ? "Entrando..." : "Entrar"}
-        </Button>
-      </form>
-    </Form>
+      <Button type="submit" className="w-full" disabled={isLoading}>
+        {isLoading ? "Entrando..." : "Entrar"}
+      </Button>
+    </form>
   )
 }
 
