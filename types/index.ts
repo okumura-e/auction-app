@@ -14,6 +14,7 @@ export interface Auction {
   startDate: string
   endDate: string
   createdAt: string
+  status: "waiting" | "open" | "closed"
 }
 
 export interface Bid {
