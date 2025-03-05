@@ -2,12 +2,13 @@
 
 import { redirect } from "next/navigation"
 import AuctionList from "@/components/auctionList/index"
-import { useState } from "react"
+import { useContext, useState } from "react"
+import { useAuth } from "@/context/auth-context"
 
 export default async function Home() {
-  const [session, setSession] = useState(false)
+  const { user } = useAuth()
 
-  if (!session) {
+  if (!user) {
     redirect("/login")
   }
 
