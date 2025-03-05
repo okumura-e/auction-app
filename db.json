@@ -1,0 +1,53 @@
+{
+  "auctions": [
+    {
+      "id": 1,
+      "name": "Modern Art Auction",
+      "createdAt": "2025-03-05T10:00:00Z",
+      "startDateTime": "2025-03-10T15:00:00Z",
+      "endDateTime": "2025-03-10T18:00:00Z",
+      "startingValue": 5000,
+      "quantity": 1,
+      "status": "open",
+      "bids": [
+        {
+          "user": "João Silva",
+          "bidValue": 5500,
+          "timestamp": "2025-03-10T15:30:00Z"
+        },
+        {
+          "user": "Maria Souza",
+          "bidValue": 6000,
+          "timestamp": "2025-03-10T16:00:00Z"
+        }
+      ]
+    },
+    {
+      "id": 2,
+      "name": "Classic Cars Auction",
+      "createdAt": "2025-03-01T12:00:00Z",
+      "startDateTime": "2025-03-15T14:00:00Z",
+      "endDateTime": "2025-03-15T20:00:00Z",
+      "startingValue": 30000,
+      "quantity": 5,
+      "status": "waiting",
+      "bids": []
+    }
+  ],
+  "users": [
+    {
+      "id": 1,
+      "name": "João Silva",
+      "cpf": "123.456.789-00",
+      "role": "user",
+      "password": "password"
+    },
+    {
+      "id": 2,
+      "name": "Maria Souza",
+      "cpf": "987.654.321-00",
+      "role": "admin",
+      "password": "password"
+    }
+  ]
+}

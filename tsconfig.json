@@ -23,6 +23,7 @@
       "@/hooks/*": ["./hooks/*"],
       "@/context/*": ["./context/*"],
       "@/types/*": ["./types/*"],
+      "@/service/*": ["./service/*"],
     }
   },
   "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx", ".next/types/**/*.ts", "tailwind.config.js"],
