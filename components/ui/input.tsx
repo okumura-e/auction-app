@@ -18,7 +18,7 @@ interface InputProps {
         <input
           type={type}
           placeholder={placeholder}
-          value={value}
+          value={value ?? ""}
           required={required}
           {...register(name, {
             setValueAs: (value) => {
@@ -26,7 +26,8 @@ interface InputProps {
               if (type === "datetime-local") return value ? new Date(value) : undefined
               return value
             },
-          })}            className={`border rounded-md p-2 ${errorMessage ? "border-red-500" : "border-gray-300"}`}
+          })}            
+          className={`border rounded-md p-2 ${errorMessage ? "border-red-500" : "border-gray-300"}`}
         />
         {errorMessage && <span className="text-red-500 text-sm">{errorMessage}</span>}
       </div>

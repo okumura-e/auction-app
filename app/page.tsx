@@ -2,14 +2,22 @@
 
 import { redirect } from "next/navigation"
 import AuctionList from "@/components/auctionList/index"
-import { useContext, useState } from "react"
+import { useEffect, useState } from "react"
 import { useAuth } from "@/context/auth-context"
 
-export default async function Home() {
-  const { user } = useAuth()
+export default function Home() {
+  const { user, isLoading } = useAuth()
+  const [isRedirecting, setIsRedirecting] = useState(false)
 
-  if (!user) {
-    redirect("/login")
+  useEffect(() => {
+    if (!isLoading && !user) {
+      setIsRedirecting(true)
+      redirect("/login")
+    }
+  }, [user, isLoading])
+
+  if (isLoading || isRedirecting) {
+    return <div>Carregando...</div>
   }
 
   return (
@@ -18,4 +26,3 @@ export default async function Home() {
     </main>
   )
 }
-

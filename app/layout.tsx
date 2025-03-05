@@ -1,31 +1,30 @@
-import type React from "react"
-import type { Metadata } from "next"
-import { Inter } from "next/font/google"
-import "./globals.css"
+"use client"
+
+import { QueryClient, QueryClientProvider } from "@tanstack/react-query"
+import { Toaster } from "react-hot-toast"
 import { AuthProvider } from "@/context/auth-context"
-import { Toaster } from 'react-hot-toast';
+import "./globals.css"
 
-const inter = Inter({ subsets: ["latin"] })
-
-export const metadata: Metadata = {
-  title: "Sistema de Leilão",
-  description: "Sistema de leilão em tempo real",
-}
-
-export default function RootLayout({
-  children,
-}: {
-  children: React.ReactNode
-}) {
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      retry: 2, 
+      refetchOnWindowFocus: false,
+    },
+  },
+})
+export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="pt-BR">
-      <body className={inter.className}>
-        <Toaster />
-        <AuthProvider>
-          {children}
-        </AuthProvider>
+      <body>
+        <QueryClientProvider client={queryClient}>
+          <AuthProvider>
+            {children}
+            <Toaster />
+          </AuthProvider>
+        </QueryClientProvider>
       </body>
     </html>
   )
 }
-

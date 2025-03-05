@@ -47,7 +47,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <StatusBadge status={status} />
+          <StatusBadge status={auction.status} />
           <AuctionTimer endDate={auction.endDate} status={status} />
         </div>
       </div>
