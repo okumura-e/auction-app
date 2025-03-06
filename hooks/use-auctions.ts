@@ -17,20 +17,14 @@ export const useAuction = (auctionId: string) => {
     queryKey: ["auction", auctionId],
     queryFn: async () => {
       const response = await api.get(`/auctions/${auctionId}`)
-      console.log(response.data);
-      
       return response.data
     },
   })
 }
 
 export const useCreateAuction = () => {
-  console.log(123);
   return useMutation<Auction, Error, Auction>({
-    
     mutationFn: async (newAuction: Auction) => {
-      console.log(newAuction);
-      
       const response = await api.post("/auctions", newAuction)
       return response.data
     },
