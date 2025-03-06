@@ -25,3 +25,8 @@ export interface Bid {
   timestamp: string
 }
 
+export interface AddBidParams {
+  auction: Auction
+  bid: Bid
+  bids: Bid[]
+}
