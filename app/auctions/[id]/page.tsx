@@ -19,7 +19,7 @@ export default async function AuctionPage({ params }: AuctionPageProps) {
 
   return (
     <div className="container mx-auto py-8">
-      <AuctionDetail id={"1"} />
+      <AuctionDetail id={params.id} />
     </div>
   )
 }

@@ -20,7 +20,7 @@ export default function BidHistory({ bids }: BidHistoryProps) {
             <div className="flex justify-between items-start">
               <div>
                 <p className="font-medium">{bid.userName}</p>
-                <p className="text-sm text-muted-foreground">{format(new Date(bid.createdAt), "dd/MM/yyyy HH:mm:ss")}</p>
+                <p className="text-sm text-muted-foreground">{format(new Date(bid.timestamp), "dd/MM/yyyy HH:mm:ss")}</p>
               </div>
               <p className="font-bold">{Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(bid.amount)}</p>
             </div>

@@ -5,17 +5,19 @@ import { useForm } from "react-hook-form"
 import { zodResolver } from "@hookform/resolvers/zod"
 import * as z from "zod"
 import { useRouter } from "next/navigation"
-// import { createAuction } from "@/lib/api"
 import { Button } from "@/components/ui/button"
 import Input from "@/components/ui/input"
+import { useCreateAuction } from "@/hooks/use-auctions"
+import { v4 as uuidv4 } from 'uuid';
+import toast from "react-hot-toast"
 
 const auctionSchema = z.object({
   name: z
     .string()
     .min(3, "Nome inválido"),
-  startDate: z.date(),
-  endDate: z.date(),
-  initialPrice: z.number().nonnegative({ message: "Preço inicial não pode ser negativo" }),
+  startDateTime: z.date(),
+  endDateTime: z.date(),
+  startingValue: z.number().nonnegative({ message: "Preço inicial não pode ser negativo" }),
   quantity: z.number().nonnegative({ message: "Quantidade não pode ser negativa" }),
   status: z.enum(["waiting", "open", "closed"]),
 })
@@ -23,8 +25,9 @@ const auctionSchema = z.object({
 type AuctionFormValues = z.infer<typeof auctionSchema>
 
 export default function AuctionForm() {
-  const [isLoading, setIsLoading] = useState(false)
-  const router = useRouter()
+  const [isLoading, setIsLoading] = useState(false);
+  const router = useRouter();
+  const createAuction = useCreateAuction();
 
   const {
     register,
@@ -35,12 +38,31 @@ export default function AuctionForm() {
     resolver: zodResolver(auctionSchema),
   });
 
-  async function onSubmit(data: AuctionFormValues) {
-    console.log(123);
-    
+  const onSubmit = async (data: AuctionFormValues) => {
     setIsLoading(true)
-    console.log(data);
-    
+    const formattedData = {
+      ...data,
+      id: uuidv4(),
+      startDateTime: data.startDateTime.toISOString(),
+      endDateTime: data.endDateTime.toISOString(),
+      bids: [],
+      createdAt: new Date().toISOString(),
+    }
+
+    try {
+      await toast.promise(
+        createAuction.mutateAsync(formattedData),
+        {
+          loading: "Criando...",
+          success: "Leilão criado com sucesso!",
+          error: "Erro ao criar leilão.",
+        }
+      )
+
+      router.push("/")
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
@@ -52,7 +74,6 @@ export default function AuctionForm() {
         type="text"
         register={register}
         value={watch("name")}
-        
         errorMessage={errors.name?.message as string}
       />
 
@@ -64,41 +85,39 @@ export default function AuctionForm() {
           type="number"
           register={register}
           value={watch("quantity")}
-          
           errorMessage={errors.quantity?.message as string}
         />
 
         <Input
           label="Preço inicial"
-          name="initialPrice"
+          name="startingValue"
           placeholder="Digite o preço inicial"
           type="number"
           register={register}
-          value={Number(watch("initialPrice")) || ""}
-          errorMessage={errors.initialPrice?.message as string}
+          value={Number(watch("startingValue")) || ""}
+          errorMessage={errors.startingValue?.message as string}
         />
       </div>
 
       <div className="flex gap-4 w-full">
         <Input
           label="Data de inicio"
-          name="startDate"
+          name="startDateTime"
           placeholder="Digite a data de inicio"
           type="datetime-local"
           register={register}
-          value={watch("startDate") ? new Date(watch("startDate")).toISOString().slice(0, 16) : ""}
-          errorMessage={errors.startDate?.message as string}
+          value={watch("startDateTime") ? new Date(watch("startDateTime")).toISOString().slice(0, 16) : ""}
+          errorMessage={errors.startDateTime?.message as string}
         />
 
         <Input
           label="Data de fim"
-          name="endDate"
+          name="endDateTime"
           placeholder="Digite a data de fim"
           type="datetime-local"
           register={register}
-          value={watch("endDate") ? new Date(watch("endDate")).toISOString().slice(0, 16) : ""}
-          
-          errorMessage={errors.endDate?.message as string}
+          value={watch("endDateTime") ? new Date(watch("endDateTime")).toISOString().slice(0, 16) : ""}
+          errorMessage={errors.endDateTime?.message as string}
         />
       </div>
 

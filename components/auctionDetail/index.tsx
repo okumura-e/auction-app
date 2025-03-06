@@ -5,30 +5,21 @@ import { Badge } from "@/components/ui/badge"
 import BidForm from "@/components/bidForm"
 import BidHistory from "@/components/bidHistory"
 import AuctionTimer from "@/components/auctionTimer"
-import type { Auction, Bid } from "@/types/index"
+import type { Bid } from "@/types/index"
+import { useAuction } from "@/hooks/use-auctions"
+import { format } from "date-fns"
 
 interface AuctionDetailProps {
   id: string
 }
 
 export default function AuctionDetail({ id }: AuctionDetailProps) {
-  const [auction, setAuction] = useState<Auction | null>({
-    id: "1",
-    name: "Leil o de Carro",
-    quantity: 1,
-    initialPrice: 10000,
-    currentPrice: 15000,
-    startDate: new Date().toISOString(),
-    endDate: new Date(Date.now() + 1000 * 60 * 60 * 24 * 7).toISOString(),
-    createdAt: new Date().toISOString(),
-    status: "open",
-  })
   const [bids, setBids] = useState<Bid[]>([])
-  const [timeRemaining, setTimeRemaining] = useState("")
   const [status, setStatus] = useState<"waiting" | "open" | "closed">("waiting")
   const [winner, setWinner] = useState<{ name: string; amount: number } | null>(null)
-  const [isLoading, setIsLoading] = useState(false)
 
+  const { data: auction, isLoading, isError, error } = useAuction(id as string)
+  
   if (isLoading) {
     return <div className="text-center py-8">Carregando detalhes do leilão...</div>
   }
@@ -48,7 +39,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
         </div>
         <div className="flex items-center gap-2">
           <StatusBadge status={auction.status} />
-          <AuctionTimer endDate={auction.endDate} status={status} />
+          <AuctionTimer endDate={auction.endDateTime} status={auction.status} />
         </div>
       </div>
 
@@ -57,13 +48,13 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
           <Card>
             <CardHeader>
               <CardTitle>Detalhes do Leilão</CardTitle>
-              <CardDescription>Criado em {(auction.createdAt)}</CardDescription>
+              <CardDescription>Criado em {format(new Date(auction.createdAt), "dd/MM/yyyy HH:mm")}</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
               <div>
                 <h3 className="font-medium">Preço Atual</h3>
-                <p className="text-3xl font-bold">{(auction.currentPrice || auction.initialPrice)}</p>
-                <p className="text-sm text-muted-foreground">Preço inicial: {(auction.initialPrice)}</p>
+                <p className="text-3xl font-bold">{Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(auction.startingValue)}</p>
+                <p className="text-sm text-muted-foreground">Preço inicial: {Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(auction.startingValue)}</p>
               </div>
 
               <div>
@@ -71,11 +62,11 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
                 <div className="grid grid-cols-2 gap-4">
                   <div>
                     <p className="text-sm text-muted-foreground">Início</p>
-                    <p>{(auction.startDate)}</p>
+                    <p>{format(new Date(auction.startDateTime), "dd/MM/yyyy HH:mm:ss")}</p>
                   </div>
                   <div>
                     <p className="text-sm text-muted-foreground">Término</p>
-                    <p>{(auction.endDate)}</p>
+                    <p>{format(new Date(auction.endDateTime), "dd/MM/yyyy HH:mm:ss")}</p>
                   </div>
                 </div>
               </div>
@@ -95,7 +86,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
           {auction.status === "open" && (
             <BidForm
               auctionId={id}
-              currentPrice={auction.currentPrice || auction.initialPrice}
+              currentPrice={auction.startingValue}
               userId={"1"}
               userName={"John Doe"}
             />
@@ -108,7 +99,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
               <CardTitle>Histórico de Lances</CardTitle>
             </CardHeader>
             <CardContent>
-              <BidHistory bids={bids} />
+              <BidHistory bids={auction.bids} />
             </CardContent>
           </Card>
         </div>
