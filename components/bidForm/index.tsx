@@ -6,27 +6,28 @@ import * as z from "zod"
 import { Button } from "@/components/ui/button"
 import Input from "@/components/ui/input"
 import { Card, CardContent, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
+import { useAddBid } from "@/hooks/use-auctions"
+import { Auction, Bid } from "@/types/index"
+import { v4 as uuidv4 } from 'uuid';
 
 interface BidFormProps {
-    auctionId: string
+    auction: Auction
+    bids: Bid[]
     currentPrice: number
     userId: string
     userName: string
 }
 
-export default function BidForm({ auctionId, currentPrice, userId, userName }: BidFormProps) {
+export default function BidForm({ auction, bids, currentPrice, userId, userName }: BidFormProps) {
     const [isLoading, setIsLoading] = useState(false)
-    const [lastBidTime, setLastBidTime] = useState<Date | null>(null)
     const [cooldownRemaining, setCooldownRemaining] = useState(0)
 
     const bidSchema = z.object({
         amount: z.coerce
-        .number()
-        .positive("O valor deve ser positivo")
-        .min(currentPrice + 1, `O lance deve ser maior que ${(currentPrice)}`),
+            .number()
+            .positive("O valor deve ser positivo")
+            .min(currentPrice + 1, `O lance deve ser maior que ${Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(currentPrice)}`),
     })
-
-    // formatar o valor aq
     type BidFormValues = z.infer<typeof bidSchema>
 
     const {
@@ -37,11 +38,35 @@ export default function BidForm({ auctionId, currentPrice, userId, userName }: B
     } = useForm({
         resolver: zodResolver(bidSchema),
     });
+    const { mutateAsync: addBid } = useAddBid()
 
-
-    async function onSubmit(data: BidFormValues) {
+    const onSubmit = async (data: BidFormValues) => {
         setIsLoading(true)
+        setCooldownRemaining(5)
+        try {
+            const bidWithTimestamp = {
+                ...data,
+                timestamp: new Date().toISOString(),
+                userId: userId,
+                userName: userName,
+                id: uuidv4(),
+                auctionId: auction.id
+            }
+            await addBid({ auction, bids, bid: bidWithTimestamp })
+        } catch (error) {
+            console.error("Erro ao adicionar lance:", error)
+        } finally {
+            setIsLoading(false)
+        }
     }
+
+    useEffect(() => {
+        if (cooldownRemaining === 0) return
+        const timer = setInterval(() => {
+            setCooldownRemaining((prev) => prev - 1)
+        }, 1000)
+        return () => clearInterval(timer)
+    }, [cooldownRemaining])
 
     return (
         <Card>
@@ -53,7 +78,7 @@ export default function BidForm({ auctionId, currentPrice, userId, userName }: B
                     <div className="space-y-4">
                         <div>
                             <p className="text-sm text-muted-foreground">Lance atual</p>
-                            <p className="text-xl font-bold">{(currentPrice)}</p>
+                            <p className="text-xl font-bold">{Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(currentPrice || auction.startingValue)}</p>
                         </div>
 
                         <Input

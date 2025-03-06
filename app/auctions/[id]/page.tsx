@@ -3,24 +3,19 @@
 import { redirect } from "next/navigation"
 import AuctionDetail from "@/components/auctionDetail"
 import { useAuth } from "@/context/auth-context"
+import React from "react"
 
-interface AuctionPageProps {
-  params: {
-    id: string
-  }
-}
-
-export default async function AuctionPage({ params }: AuctionPageProps) {
+export default async function AuctionPage({ params }: { params: Promise<{ id: string }> }) {
   const { user } = useAuth()
+  const { id: auctionId } = await params
 
   if (!user) {
-    redirect("/login")
+    return redirect("/login")
   }
 
   return (
     <div className="container mx-auto py-8">
-      <AuctionDetail id={params.id} />
+      <AuctionDetail id={auctionId} />
     </div>
   )
 }
-

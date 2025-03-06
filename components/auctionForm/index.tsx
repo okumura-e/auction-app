@@ -58,8 +58,8 @@ export default function AuctionForm() {
           error: "Erro ao criar leilão.",
         }
       )
-
       router.push("/")
+      router.refresh()
     } finally {
       setIsLoading(false)
     }

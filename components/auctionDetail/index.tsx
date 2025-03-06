@@ -1,5 +1,6 @@
+"use client"
 
-import { useState, useEffect } from "react"
+import { useEffect, useState } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import BidForm from "@/components/bidForm"
@@ -8,18 +9,64 @@ import AuctionTimer from "@/components/auctionTimer"
 import type { Bid } from "@/types/index"
 import { useAuction } from "@/hooks/use-auctions"
 import { format } from "date-fns"
+import { useAuth } from "@/context/auth-context"
+import { io } from "socket.io-client"
+import { Button } from "../ui/button"
 
 interface AuctionDetailProps {
   id: string
 }
 
 export default function AuctionDetail({ id }: AuctionDetailProps) {
+  const { data: auction, isLoading } = useAuction(id)
   const [bids, setBids] = useState<Bid[]>([])
+  const [currentPrice, setCurrentPrice] = useState<number>(0)
+  const [count, setCount] = useState<number>(0)
   const [status, setStatus] = useState<"waiting" | "open" | "closed">("waiting")
   const [winner, setWinner] = useState<{ name: string; amount: number } | null>(null)
+  const { user } = useAuth()
 
-  const { data: auction, isLoading, isError, error } = useAuction(id as string)
-  
+  useEffect(() => {
+    const socket = io('http://localhost:3001');
+    socket.on("new-bid", (data) => {
+      if (id === data.auction.id) {
+        setBids((prevBids) => [data.bid, ...prevBids]);
+        setCurrentPrice(data.bid.amount)
+      }
+    });
+    return () => {
+      socket.disconnect();
+    };
+  }, [setBids]);
+
+  useEffect(() => {
+    if (auction) {
+      setBids(auction.bids)
+      setCurrentPrice(auction?.bids[0]?.amount || auction.startingValue)
+      setStatus(auction.status)
+    }
+  }, [auction])
+
+  useEffect(() => {
+    if (auction) {
+      const endDate = new Date(auction.endDateTime).getTime()
+      const now = new Date().getTime()
+      const diff = endDate - now
+
+      if (diff <= 0) {
+        setStatus("closed")
+        if (auction && bids.length > 0) {
+          const lastBid = bids[0];
+          setWinner({ name: lastBid.userName, amount: lastBid.amount });
+        }
+      } else {
+        setTimeout(() => {
+          setCount((prevCount) => prevCount + 1)
+        }, 1000);
+      }
+    }
+  }, [auction, count])
+
   if (isLoading) {
     return <div className="text-center py-8">Carregando detalhes do leilão...</div>
   }
@@ -30,6 +77,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
 
   return (
     <div className="space-y-8">
+      <Button type="button" variant="outline" className="w-20" onClick={() => window.history.back()}>Voltar</Button>
       <div className="flex flex-col md:flex-row justify-between items-start gap-4">
         <div>
           <h1 className="text-3xl font-bold">{auction.name}</h1>
@@ -38,8 +86,8 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
           </p>
         </div>
         <div className="flex items-center gap-2">
-          <StatusBadge status={auction.status} />
-          <AuctionTimer endDate={auction.endDateTime} status={auction.status} />
+          <StatusBadge status={status} />
+          <AuctionTimer endDate={auction.endDateTime} status={status} />
         </div>
       </div>
 
@@ -53,7 +101,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
             <CardContent className="space-y-4">
               <div>
                 <h3 className="font-medium">Preço Atual</h3>
-                <p className="text-3xl font-bold">{Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(auction.startingValue)}</p>
+                <p className="text-3xl font-bold">{Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(currentPrice || auction.startingValue)}</p>
                 <p className="text-sm text-muted-foreground">Preço inicial: {Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(auction.startingValue)}</p>
               </div>
 
@@ -76,19 +124,20 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
                   <h3 className="font-medium text-green-800">Leilão Encerrado</h3>
                   <p className="text-green-700">
                     Vencedor: <span className="font-bold">{winner.name}</span> com o lance de{" "}
-                    {(winner.amount)}
+                    {Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(winner.amount)}
                   </p>
                 </div>
               )}
             </CardContent>
           </Card>
 
-          {auction.status === "open" && (
+          {status === "open" && (
             <BidForm
-              auctionId={id}
-              currentPrice={auction.startingValue}
-              userId={"1"}
-              userName={"John Doe"}
+              auction={auction}
+              bids={bids}
+              currentPrice={currentPrice || auction.startingValue}
+              userId={user!.id}
+              userName={user!.name}
             />
           )}
         </div>
@@ -99,7 +148,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
               <CardTitle>Histórico de Lances</CardTitle>
             </CardHeader>
             <CardContent>
-              <BidHistory bids={auction.bids} />
+              <BidHistory bids={bids} />
             </CardContent>
           </Card>
         </div>
@@ -119,4 +168,3 @@ function StatusBadge({ status }: { status: "waiting" | "open" | "closed" }) {
 
   return <Badge variant={variant}>{label}</Badge>
 }
-

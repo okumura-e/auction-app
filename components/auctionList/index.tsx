@@ -43,12 +43,12 @@ export default function AuctionList() {
                   <CardHeader>
                     <div className="flex justify-between items-start">
                       <CardTitle>{auction.name}</CardTitle>
-                      <StatusBadge status={auction.status} />
+                      <StatusBadge status={new Date() > new Date(auction.endDateTime) ? "closed" : auction.status} />
                     </div>
                     <CardDescription>Quantidade: {auction.quantity}</CardDescription>
                   </CardHeader>
                   <CardContent>
-                    <p className="text-2xl font-bold">{Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(auction.startingValue)}</p>
+                    <p className="text-2xl font-bold">{Intl.NumberFormat("pt-BR", { style: "currency", currency: "BRL" }).format(auction?.bids[0]?.amount || auction.startingValue)}</p>
                     <div className="flex items-center mt-2 text-muted-foreground">
                       <AuctionTimer endDate={auction.endDateTime} status={auction.status} />
                     </div>

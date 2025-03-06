@@ -13,7 +13,7 @@ export default function BidHistory({ bids }: BidHistoryProps) {
   }
 
   return (
-    <section className="h-[400px] pr-4">
+    <section className="h-[500px] pr-4 overflow-y-scroll">
       <div className="space-y-4">
         {bids.map((bid) => (
           <div key={bid.id} className="border-b pb-3">
