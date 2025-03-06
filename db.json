@@ -11,18 +11,28 @@
       "status": "open",
       "bids": [
         {
-          "id": "1",
-          "userId": "1",
-          "userName": "João Silva",
-          "amount": 5500,
-          "timestamp": "2025-03-10T15:30:00Z"
+          "amount": 7000,
+          "timestamp": "2025-03-06T20:34:46.182Z",
+          "userId": "2",
+          "userName": "Regular User",
+          "id": "b4a4d725-1058-49aa-8b32-a0ec9164eeb2",
+          "auctionId": "4782391d-3d86-42b0-98c4-bb4ba5b1d710"
         },
         {
-          "id": "2",
-          "userId": "2",
-          "userName": "Maria Souza",
           "amount": 6000,
-          "timestamp": "2025-03-10T16:00:00Z"
+          "timestamp": "2025-03-06T20:34:33.579Z",
+          "userId": "1",
+          "userName": "Admin User",
+          "id": "fd56d25d-24ac-4c81-97c4-45c891030b7a",
+          "auctionId": "4782391d-3d86-42b0-98c4-bb4ba5b1d710"
+        },
+        {
+          "amount": 5001,
+          "timestamp": "2025-03-06T20:34:21.591Z",
+          "userId": "2",
+          "userName": "Regular User",
+          "id": "b300f13d-bcb6-4651-badf-7752f4606f94",
+          "auctionId": "4782391d-3d86-42b0-98c4-bb4ba5b1d710"
         }
       ]
     },
@@ -42,14 +52,14 @@
     {
       "id": 1,
       "name": "João Silva",
-      "email": "123.456.789-00@email.com",
+      "cpf": "123.456.789-00",
       "role": "user",
       "password": "123456"
     },
     {
       "id": 2,
       "name": "Maria Souza",
-      "email": "987.654.321-00@email.com",
+      "cpf": "987.654.321",
       "role": "admin",
       "password": "$2a$10$Jgt3sTcqRm3C48lNvOdnmutAOHX4PV04ssEMwL7fzSNxelEQZV/9q"
     }
