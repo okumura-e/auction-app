@@ -1,6 +1,8 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { api } from "@/service/api"
-import type { Auction } from "@/types/index"
+import type { AddBidParams, Auction, Bid } from "@/types/index"
+import { io } from 'socket.io-client';
+const socket = io('http://localhost:3001');
 
 export const useAuctions = () => {
   return useQuery<Auction[], Error>({
@@ -36,3 +38,23 @@ export const useCreateAuction = () => {
     },
   })
 }
+
+export const useAddBid = () => {
+  return useMutation<Auction, Error, AddBidParams>({
+    mutationFn: async ({ auction, bids, bid }) => {
+      const response = await api.put(`/auctions/${auction.id}`, { 
+        ...auction, 
+        bids: [bid, ...bids]
+      });
+      return response.data;
+    },
+    onSuccess: (updatedAuction, variables) => {
+      const { bid } = variables;
+      socket.emit('new-bid', { bid, auction: updatedAuction });
+    },
+    onError: (error) => {
+      console.error("Failed to add bid:", error);
+    },
+  });
+};
+
