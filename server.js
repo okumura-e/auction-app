@@ -24,6 +24,11 @@ io.on('connection', (socket) => {
     io.emit('new-bid', bid);
   });
 
+  socket.on('new-auction', () => {
+    console.log('New auction received:');
+    io.emit('new-auction');
+  });
+
   socket.on('disconnect', () => {
     console.log('user disconnected');
   });
