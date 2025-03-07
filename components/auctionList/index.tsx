@@ -7,10 +7,21 @@ import type { Auction } from "@/types/index"
 import { PlusCircle, LogOut } from "lucide-react"
 import { useAuth } from "@/context/auth-context"
 import AuctionTimer from "../auctionTimer"
+import { useEffect } from "react"
+import socket from "@/hooks/use-socket"
 
 export default function AuctionList() {
   const { user, logout } = useAuth()
-  const { data: auctions, isLoading } = useAuctions()
+  const { data: auctions, isLoading, refetch } = useAuctions()
+
+  useEffect(() => {
+    socket.on("new-auction", () => {
+      refetch();
+    });
+    return () => {
+      socket.off("new-auction");
+    };
+  }, []);
 
   if (isLoading) {
     return <div className="text-center py-8">Carregando leilões...</div>

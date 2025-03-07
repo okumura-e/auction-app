@@ -7,9 +7,10 @@ import * as z from "zod"
 import { useRouter } from "next/navigation"
 import { Button } from "@/components/ui/button"
 import Input from "@/components/ui/input"
-import { useCreateAuction } from "@/hooks/use-auctions"
+import { useAuctions, useCreateAuction } from "@/hooks/use-auctions"
 import { v4 as uuidv4 } from 'uuid';
 import toast from "react-hot-toast"
+import socket from "@/hooks/use-socket"
 
 const auctionSchema = z.object({
   name: z
@@ -28,6 +29,7 @@ export default function AuctionForm() {
   const [isLoading, setIsLoading] = useState(false);
   const router = useRouter();
   const createAuction = useCreateAuction();
+  const { refetch } = useAuctions()
 
   const {
     register,
@@ -58,8 +60,9 @@ export default function AuctionForm() {
           error: "Erro ao criar leilão.",
         }
       )
-      router.push("/")
-      router.refresh()
+      refetch();
+      socket.emit('new-auction', { auction: formattedData });
+      router.replace("/")
     } finally {
       setIsLoading(false)
     }

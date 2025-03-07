@@ -10,8 +10,8 @@ import type { Bid } from "@/types/index"
 import { useAuction } from "@/hooks/use-auctions"
 import { format } from "date-fns"
 import { useAuth } from "@/context/auth-context"
-import { io } from "socket.io-client"
 import { Button } from "../ui/button"
+import socket from "@/hooks/use-socket"
 
 interface AuctionDetailProps {
   id: string
@@ -27,7 +27,6 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
   const { user } = useAuth()
 
   useEffect(() => {
-    const socket = io('http://localhost:3001');
     socket.on("new-bid", (data) => {
       if (id === data.auction.id) {
         setBids((prevBids) => [data.bid, ...prevBids]);

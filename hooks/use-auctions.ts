@@ -1,8 +1,7 @@
 import { useMutation, useQuery } from "@tanstack/react-query"
 import { api } from "@/service/api"
 import type { AddBidParams, Auction, Bid } from "@/types/index"
-import { io } from 'socket.io-client';
-const socket = io('http://localhost:3001');
+import socket from "./use-socket"
 
 export const useAuctions = () => {
   return useQuery<Auction[], Error>({
