@@ -1,6 +1,6 @@
 # Sistema de Leilões
 
-Este projeto é um sistema de leilões, ondeusuários podem criar leilões e fazerem lances que são notificados a todos em tempo real. O projeto utiliza **Next.js**, **TypeScript**, **React Hook Form**, **React Query**, **axios**, **Zod** e **React Hot Toast**. O sistema realiza a validação de usuários com informações como CPF e senha, além de validar e formatar o CPF durante o processo de login.
+Este projeto é um sistema de leilões, onde usuários podem criar leilões e fazerem lances que são notificados a todos em tempo real. O projeto utiliza **Next.js**, **TypeScript**, **React Hook Form**, **React Query**, **Json Server**, **Axios**, **Zod**, **Socket.io**, e **React Hot Toast**. O sistema realiza a validação de usuários com informações de CPF e senha, além de validar e formatar o CPF durante o processo de login.
 
 ## Funcionalidades
 
@@ -80,3 +80,15 @@ Siga os passos abaixo para configurar e rodar o projeto localmente:
    npm run dev
    ```
     A aplicação iniciará na porta 3002. É possível acessar no endereço [http://localhost:3002](http://localhost:3002)
+   
+É possível fazer login com o usuário administrador (que pode criar leilões) e o usuário regular.
+```bash
+admin user
+CPF: 123.456.789-00
+Senha: password
+```
+```bash
+regular user
+CPF: 987.654.321-00
+Senha: password
+```
