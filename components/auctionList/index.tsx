@@ -4,12 +4,12 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import type { Auction } from "@/types/index"
-import { PlusCircle } from "lucide-react"
+import { PlusCircle, LogOut } from "lucide-react"
 import { useAuth } from "@/context/auth-context"
 import AuctionTimer from "../auctionTimer"
 
 export default function AuctionList() {
-  const { user } = useAuth()
+  const { user, logout } = useAuth()
   const { data: auctions, isLoading } = useAuctions()
 
   if (isLoading) {
@@ -17,7 +17,11 @@ export default function AuctionList() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="space-y-6 flex flex-col">
+      <Button variant="ghost" className="self-end" onClick={logout}>
+        <LogOut className="mr-2 h-4 w-4" />
+        Sair
+      </Button>
       <div className="flex justify-between items-center">
         <h1 className="text-3xl font-bold">Leilões Disponíveis</h1>
         {user && user.role === "admin" && (
