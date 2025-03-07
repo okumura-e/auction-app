@@ -27,7 +27,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   const [isLoading, setIsLoading] = useState(true)
 
   useEffect(() => {
-    // Check if user is already logged in
     const storedUser = localStorage.getItem("user")
     const storedToken = localStorage.getItem("token")
 
@@ -42,13 +41,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setIsLoading(true)
 
     try {
-      // In a real app, this would be an API call
-      // For demo purposes, we'll simulate a successful login
-
-      // Simulate API delay
       await new Promise((resolve) => setTimeout(resolve, 1000))
 
-      // Check credentials (in a real app, this would be done on the server)
       if (cpf === "123.456.789-00" && password === "password") {
         const user = {
           id: "1",
@@ -57,7 +51,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           role: "admin" as "admin" | "user",
         }
 
-        // Store user and token
         localStorage.setItem("user", JSON.stringify(user))
         localStorage.setItem("token", "fake-jwt-token")
 
@@ -73,7 +66,6 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           role: "user" as "user",
         }
 
-        // Store user and token
         localStorage.setItem("user", JSON.stringify(user))
         localStorage.setItem("token", "fake-jwt-token")
 
