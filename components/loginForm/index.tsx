@@ -9,6 +9,7 @@ import { useAuth } from "@/hooks/use-auth"
 import { Button } from "@/components/ui/button"
 import Input from "../ui/input"
 import toast from 'react-hot-toast';
+import { formatCpf } from "./helpers"
 
 const loginSchema = z.object({
   cpf: z
@@ -32,6 +33,7 @@ export default function LoginForm() {
     register,
     handleSubmit,
     watch,
+    setValue,
     formState: { errors },
   } = useForm({
     resolver: zodResolver(loginSchema),
@@ -59,11 +61,15 @@ export default function LoginForm() {
       <Input
         label="CPF"
         placeholder="000.000.000-00"
-        name="cpf"
         type="text"
-        register={register}
-        value={watch("cpf")}
+        {...register("cpf")}
+        value={watch("cpf") ?? ""}
+        onChange={(e) => {
+          const formattedValue = formatCpf(e.target.value);
+          setValue("cpf", formattedValue);
+        }}
         errorMessage={errors.cpf?.message as string}
+        maxLength={14}
       />
 
       <Input
