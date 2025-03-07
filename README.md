@@ -31,15 +31,17 @@ Este projeto é um sistema de leilões, onde usuários podem criar leilões e fa
 
 A estrutura do projeto é organizada da seguinte maneira:
 
-├── app/ 
-├── components/ 
-├── hooks/
-├── context/
-├── services/  
-├── types/ 
-├── db.json/ 
-├── server.js/
+```
+├── app/*
+├── components/* 
+├── hooks/*
+├── context/*
+├── services/api.ts
+├── types/index.ts
+├── db.json
+├── server.js
 └── config.json 
+```
 
 ### Descrição das Pastas
 
