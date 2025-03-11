@@ -34,7 +34,7 @@ export default function AuctionDetail({ id }: AuctionDetailProps) {
       }
     });
     return () => {
-      socket.disconnect();
+      socket.off("new-bid");
     };
   }, [setBids]);
 
