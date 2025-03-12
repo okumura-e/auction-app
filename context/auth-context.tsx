@@ -4,6 +4,7 @@ import type React from "react"
 
 import { createContext, useState, useEffect, useContext } from "react"
 import type { User } from "@/types/index"
+import { redirect } from "next/navigation"
 
 interface AuthContextType {
   user: User | null
@@ -30,8 +31,10 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     const storedUser = localStorage.getItem("user")
     const storedToken = localStorage.getItem("token")
 
-    if (storedUser && storedToken) {
+    if (storedUser) {
       setUser(JSON.parse(storedUser))
+    }else {
+      redirect("/login")
     }
 
     setIsLoading(false)

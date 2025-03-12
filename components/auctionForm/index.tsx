@@ -40,7 +40,7 @@ export default function AuctionForm() {
     resolver: zodResolver(auctionSchema),
   });
 
-  const onSubmit = async (data: AuctionFormValues) => {
+  const onSubmit = (data: AuctionFormValues) => {
     setIsLoading(true)
     const formattedData = {
       ...data,
@@ -51,21 +51,19 @@ export default function AuctionForm() {
       createdAt: new Date().toISOString(),
     }
 
-    try {
-      await toast.promise(
-        createAuction.mutateAsync(formattedData),
-        {
-          loading: "Criando...",
-          success: "Leilão criado com sucesso!",
-          error: "Erro ao criar leilão.",
-        }
-      )
-      refetch();
+    toast.promise(
+      createAuction.mutateAsync(formattedData),
+      {
+        loading: "Criando...",
+        success: "Leilão criado com sucesso!",
+        error: "Erro ao criar leilão.",
+      }
+    ).finally(() => {
+      setIsLoading(false)
+      refetch()
       socket.emit('new-auction', { auction: formattedData });
       router.replace("/")
-    } finally {
-      setIsLoading(false)
-    }
+    })
   }
 
   return (

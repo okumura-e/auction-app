@@ -4,14 +4,10 @@ import { redirect } from "next/navigation"
 import AuctionForm from "@/components/auctionForm"
 import { useAuth } from "@/context/auth-context"
 
-export default async function NewAuctionPage() {
+export default function NewAuctionPage() {
   const { user } = useAuth()
 
-  if (!user) {
-    redirect("/login")
-  }
-
-  if (user.role !== "admin") {
+  if (user && user.role !== "admin") {
     redirect("/")
   }
 
