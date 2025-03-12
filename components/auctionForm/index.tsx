@@ -107,7 +107,9 @@ export default function AuctionForm() {
           placeholder="Digite a data de inicio"
           type="datetime-local"
           register={register}
-          value={watch("startDateTime") ? new Date(watch("startDateTime")).toISOString().slice(0, 16) : ""}
+          value={watch("startDateTime")
+            ? new Date(watch("startDateTime")).toLocaleString("sv-SE", { timeZone: "America/Sao_Paulo" }).slice(0, 16)
+            : ""}
           errorMessage={errors.startDateTime?.message as string}
         />
 
@@ -117,7 +119,9 @@ export default function AuctionForm() {
           placeholder="Digite a data de fim"
           type="datetime-local"
           register={register}
-          value={watch("endDateTime") ? new Date(watch("endDateTime")).toISOString().slice(0, 16) : ""}
+          value={watch("endDateTime")
+            ? new Date(watch("endDateTime")).toLocaleString("sv-SE", { timeZone: "America/Sao_Paulo" }).slice(0, 16) 
+            : ""}
           errorMessage={errors.endDateTime?.message as string}
         />
       </div>
